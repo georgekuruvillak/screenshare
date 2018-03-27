@@ -47,7 +47,7 @@ func sendPngBytes(conn *websocket.Conn, displayCount int, interrupt chan os.Sign
 	bounds := screenshot.GetDisplayBounds(display)
 	buf := new(bytes.Buffer)
 
-	ticker := time.NewTicker(time.Second)
+	ticker := time.NewTicker(500 * time.Millisecond)
 	defer ticker.Stop()
 
 	for {
