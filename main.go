@@ -3,12 +3,10 @@ package main
 import (
 	"bytes"
 	"flag"
-	"fmt"
 	"image/png"
 	"log"
 	"net/url"
 	"os"
-	"os/signal"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -26,7 +24,7 @@ func init() {
 func main() {
 	flag.Parse()
 	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt)
+	//signal.Notify(interrupt, os.Interrupt)
 
 	u := url.URL{Scheme: "ws", Host: addr, Path: "/source"}
 	log.Printf("connecting to %s", u.String())
@@ -61,8 +59,10 @@ func sendPngBytes(conn *websocket.Conn, displayCount int, interrupt chan os.Sign
 				panic(err)
 			}
 			png.Encode(buf, img)
-			fmt.Println("Sending stream..")
-			err = conn.WriteMessage(websocket.BinaryMessage, buf.Bytes())
+			bytesToSend := buf.Bytes()
+			log.Printf("Start sending  stream. Size: %d Kb\n", len(bytesToSend)/1000)
+			err = conn.WriteMessage(websocket.BinaryMessage, bytesToSend)
+			log.Println("Done sending  stream.")
 			if err != nil {
 				log.Println("write:", err)
 				return
